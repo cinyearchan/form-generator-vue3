@@ -1,0 +1,11 @@
+{
+  "name": "form-gen-vue3-parser",
+  "version": "1.0.0",
+  "description": "表单json解析器",
+  "main": "lib/form-gen-parser.umd.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

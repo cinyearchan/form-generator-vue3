@@ -1,0 +1,11 @@
+{
+  "name": "form-gen-vue3-render",
+  "version": "1.0.0",
+  "description": "表单核心render",
+  "main": "lib/form-gen-vue3-render.umd.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

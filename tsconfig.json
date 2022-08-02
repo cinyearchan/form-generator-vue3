@@ -34,7 +34,7 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx"
-  ],
+, "src/components/parser/parser.js"  ],
   "exclude": [
     "node_modules"
   ]
