@@ -1,3 +1,3 @@
-import Parser from "./parser.js"
+import Parser from "./parser.tsx"
 
 export default Parser

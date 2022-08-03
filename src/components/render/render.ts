@@ -1,4 +1,5 @@
 import { deepClone } from "@/utils/index"
+import { defineComponent, h } from "vue"
 
 const componentChild = {}
 /**
@@ -100,14 +101,14 @@ function makeDataObject() {
   }
 }
 
-export default {
+export default defineComponent({
   props: {
     conf: {
       type: Object,
       required: true
     }
   },
-  render(h) {
+  render(ctx) {
     const dataObject = makeDataObject()
     const confClone = deepClone(this.conf)
     const children = this.$slots.default || []
@@ -123,4 +124,4 @@ export default {
 
     return h(this.conf.__config__.tag, dataObject, children)
   }
-}
+})

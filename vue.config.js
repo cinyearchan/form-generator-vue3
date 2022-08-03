@@ -32,7 +32,7 @@ module.exports = defineConfig({
     }
   },
   devServer: {
-    overlay: false
+    // overlay: false
   },
   productionSourceMap: false,
   configureWebpack: {},

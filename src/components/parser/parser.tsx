@@ -1,5 +1,6 @@
 import { deepClone } from "@/utils/index"
-import render from "@/components/render/render.js"
+import render from "@/components/render/render"
+import { defineComponent, h } from "vue"
 
 const ruleTrigger = {
   "el-input": "blur",
@@ -14,7 +15,7 @@ const ruleTrigger = {
 }
 
 const layouts = {
-  colFormItem(h, scheme) {
+  colFormItem(h: any, scheme: any) {
     const config = scheme.__config__
     const listeners = buildListeners.call(this, scheme)
 
@@ -32,8 +33,8 @@ const layouts = {
       </el-col>
     )
   },
-  rowFormItem(h, scheme) {
-    let child = renderChildren.apply(this, arguments)
+  rowFormItem(h: any, scheme: any) {
+    let child = renderChildren.apply(this, [h, scheme])
     if (scheme.type === "flex") {
       child = (
         <el-row
@@ -53,29 +54,29 @@ const layouts = {
   }
 }
 
-function renderFrom(h) {
-  const { formConfCopy } = this
+// function renderForm(h) {
+//   const formConfCopy = this.formConfCopy
+//   console.log("renderForm")
+//   return (
+//     <el-row gutter={formConfCopy.gutter}>
+//       <el-form
+//         size={formConfCopy.size}
+//         label-position={formConfCopy.labelPosition}
+//         disabled={formConfCopy.disabled}
+//         label-width={`${formConfCopy.labelWidth}px`}
+//         ref={formConfCopy.formRef}
+//         // model不能直接赋值 https://github.com/vuejs/jsx/issues/49#issuecomment-472013664
+//         props={{ model: this[formConfCopy.formModel] }}
+//         rules={this[formConfCopy.formRules]}
+//       >
+//         {renderFormItem.call(this, h, formConfCopy.fields)}
+//         {formConfCopy.formBtns && formBtns.call(this, h)}
+//       </el-form>
+//     </el-row>
+//   )
+// }
 
-  return (
-    <el-row gutter={formConfCopy.gutter}>
-      <el-form
-        size={formConfCopy.size}
-        label-position={formConfCopy.labelPosition}
-        disabled={formConfCopy.disabled}
-        label-width={`${formConfCopy.labelWidth}px`}
-        ref={formConfCopy.formRef}
-        // model不能直接赋值 https://github.com/vuejs/jsx/issues/49#issuecomment-472013664
-        props={{ model: this[formConfCopy.formModel] }}
-        rules={this[formConfCopy.formRules]}
-      >
-        {renderFormItem.call(this, h, formConfCopy.fields)}
-        {formConfCopy.formBtns && formBtns.call(this, h)}
-      </el-form>
-    </el-row>
-  )
-}
-
-function formBtns(h) {
+function formBtns(h: any) {
   return (
     <el-col>
       <el-form-item size="large">
@@ -88,8 +89,8 @@ function formBtns(h) {
   )
 }
 
-function renderFormItem(h, elementList) {
-  return elementList.map(scheme => {
+function renderFormItem(h: any, elementList: any) {
+  return elementList.map((scheme: any) => {
     const config = scheme.__config__
     const layout = layouts[config.layout]
 
@@ -126,7 +127,7 @@ function buildListeners(scheme) {
   return listeners
 }
 
-export default {
+export default defineComponent({
   components: {
     render
   },
@@ -144,25 +145,26 @@ export default {
     }
     this.initFormData(data.formConfCopy.fields, data[this.formConf.formModel])
     this.buildRules(data.formConfCopy.fields, data[this.formConf.formRules])
+    console.log("data", data)
     return data
   },
   methods: {
-    initFormData(componentList, formData) {
-      componentList.forEach(cur => {
+    initFormData(componentList: any, formData: any) {
+      componentList.forEach((cur: any) => {
         const config = cur.__config__
         if (cur.__vModel__) formData[cur.__vModel__] = config.defaultValue
         if (config.children) this.initFormData(config.children, formData)
       })
     },
-    buildRules(componentList, rules) {
-      componentList.forEach(cur => {
+    buildRules(componentList: any, rules: any) {
+      componentList.forEach((cur: any) => {
         const config = cur.__config__
         if (Array.isArray(config.regList)) {
           if (config.required) {
             const required = {
               required: config.required,
               message: cur.placeholder
-            }
+            } as any
             if (Array.isArray(config.defaultValue)) {
               required.type = "array"
               required.message = `请至少选择一个${config.label}`
@@ -171,11 +173,13 @@ export default {
               (required.message = `${config.label}不能为空`)
             config.regList.push(required)
           }
-          rules[cur.__vModel__] = config.regList.map(item => {
-            item.pattern && (item.pattern = eval(item.pattern))
-            item.trigger = ruleTrigger && ruleTrigger[config.tag]
-            return item
-          })
+          rules[cur.__vModel__] = config.regList.map(
+            (item: { pattern: any; trigger: string | undefined }) => {
+              item.pattern && (item.pattern = eval(item.pattern))
+              item.trigger = ruleTrigger && ruleTrigger[config.tag]
+              return item
+            }
+          )
         }
         if (config.children) this.buildRules(config.children, rules)
       })
@@ -193,7 +197,26 @@ export default {
       })
     }
   },
-  render(h) {
-    return renderFrom.call(this, h)
+  render() {
+    // return renderForm.call(this, h)
+    const formConfCopy = this.formConfCopy
+    console.log("renderForm")
+    return (
+      <el-row gutter={formConfCopy.gutter}>
+        <el-form
+          size={formConfCopy.size}
+          label-position={formConfCopy.labelPosition}
+          disabled={formConfCopy.disabled}
+          label-width={`${formConfCopy.labelWidth}px`}
+          ref={formConfCopy.formRef}
+          // model不能直接赋值 https://github.com/vuejs/jsx/issues/49#issuecomment-472013664
+          props={{ model: this[formConfCopy.formModel] }}
+          rules={this[formConfCopy.formRules]}
+        >
+          {renderFormItem.call(this, h, formConfCopy.fields)}
+          {formConfCopy.formBtns && formBtns.call(this, h)}
+        </el-form>
+      </el-row>
+    )
   }
-}
+})

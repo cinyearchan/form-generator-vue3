@@ -2,13 +2,13 @@ import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router"
 import Home from "../views/index/home.vue"
 
 const routes: Array<RouteRecordRaw> = [
+  // {
+  //   path: "/",
+  //   name: "home",
+  //   component: Home
+  // },
   {
     path: "/",
-    name: "home",
-    component: Home
-  },
-  {
-    path: "/parser",
     name: "parser",
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
