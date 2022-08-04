@@ -110,6 +110,7 @@ export default defineComponent({
   },
   render(ctx) {
     const dataObject = makeDataObject()
+    const props = defineProps(dataObject)
     const confClone = deepClone(this.conf)
     const children = this.$slots.default || []
 

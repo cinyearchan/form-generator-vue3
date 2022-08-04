@@ -2,7 +2,20 @@ import { deepClone } from "@/utils/index"
 import render from "@/components/render/render"
 import { defineComponent, h } from "vue"
 
-const ruleTrigger = {
+type IElTag =
+  | "el-input"
+  | "el-input-number"
+  | "el-select"
+  | "el-radio-group"
+  | "el-checkbox-group"
+  | "el-cascader"
+  | "el-time-picker"
+  | "el-date-picker"
+  | "el-rate"
+
+const ruleTrigger: {
+  [K in IElTag]: string
+} = {
   "el-input": "blur",
   "el-input-number": "blur",
   "el-select": "change",
@@ -89,9 +102,11 @@ function formBtns(h: any) {
   )
 }
 
+type ILayout = "colFormItem" | "rowFormItem"
+
 function renderFormItem(h: any, elementList: any) {
   return elementList.map((scheme: any) => {
-    const config = scheme.__config__
+    const config = scheme.__config__ as { layout: ILayout }
     const layout = layouts[config.layout]
 
     if (layout) {
@@ -107,7 +122,7 @@ function renderChildren(h, scheme) {
   return renderFormItem.call(this, h, config.children)
 }
 
-function setValue(event, config, scheme) {
+function setValue(event: string, config, scheme) {
   this.$set(config, "defaultValue", event)
   this.$set(this[this.formConf.formModel], scheme.__vModel__, event)
 }
@@ -115,14 +130,15 @@ function setValue(event, config, scheme) {
 function buildListeners(scheme) {
   const config = scheme.__config__
   const methods = this.formConf.__methods__ || {}
-  const listeners = {}
+  const listeners: { [propName: string]: (event: string) => void } = {}
 
   // 给__methods__中的方法绑定this和event
   Object.keys(methods).forEach(key => {
-    listeners[key] = event => methods[key].call(this, event)
+    listeners[key] = (event: string) => methods[key].call(this, event)
   })
   // 响应 render.js 中的 vModel $emit('input', val)
-  listeners.input = event => setValue.call(this, event, config, scheme)
+  listeners.input = (event: string) =>
+    setValue.call(this, event, config, scheme)
 
   return listeners
 }
@@ -176,7 +192,7 @@ export default defineComponent({
           rules[cur.__vModel__] = config.regList.map(
             (item: { pattern: any; trigger: string | undefined }) => {
               item.pattern && (item.pattern = eval(item.pattern))
-              item.trigger = ruleTrigger && ruleTrigger[config.tag]
+              item.trigger = ruleTrigger && ruleTrigger[config.tag as IElTag]
               return item
             }
           )
@@ -189,7 +205,7 @@ export default defineComponent({
       this.$refs[this.formConf.formRef].resetFields()
     },
     submitForm() {
-      this.$refs[this.formConf.formRef].validate(valid => {
+      this.$refs[this.formConf.formRef].validate((valid: boolean) => {
         if (!valid) return false
         // 触发submit事件
         this.$emit("submit", this[this.formConf.formModel])
